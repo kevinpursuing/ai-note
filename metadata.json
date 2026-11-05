@@ -1,0 +1,6 @@
+{
+  "name": "声刻教研 · 教师随身语音实录工作台",
+  "description": "专为教师设计的拟物化随身语音实录与AI教研分析工作台，支持长按与锁定实时录音、流式字幕上屏、当日教学片段自动归档及AI学情分析写入。",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
