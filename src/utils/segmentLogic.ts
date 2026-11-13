@@ -1,3 +1,5 @@
+export type ClipMediaType = 'audio' | 'video' | 'file';
+
 export interface VoiceClip {
   id: string;
   segmentId: string;
@@ -6,7 +8,11 @@ export interface VoiceClip {
   durationSec: number;
   transcript: string;
   starred: boolean;
-  audioSource: 'mic' | 'simulated';
+  audioSource: 'mic' | 'simulated' | 'camera' | 'upload';
+  mediaType?: ClipMediaType;
+  mediaUrl?: string;
+  fileName?: string;
+  fileSizeLabel?: string;
   confidence: number;
   waveformPeaks: number[];
 }
@@ -62,6 +68,13 @@ export function formatDuration(seconds: number): string {
   const mins = Math.floor(safeSec / 60);
   const secs = safeSec % 60;
   return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+}
+
+export function formatFileSize(bytes: number): string {
+  if (!Number.isFinite(bytes) || bytes <= 0) return '0 KB';
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
 export function formatFriendlyDate(dateStr: string, todayStr = '2026-11-05'): string {
@@ -196,7 +209,11 @@ export function createRecordedClip(params: {
   dateStr: string;
   transcript: string;
   durationSec: number;
-  audioSource: 'mic' | 'simulated';
+  audioSource: 'mic' | 'simulated' | 'camera' | 'upload';
+  mediaType?: ClipMediaType;
+  mediaUrl?: string;
+  fileName?: string;
+  fileSizeLabel?: string;
   timestampStr?: string;
 }): VoiceClip {
   const cleanText = params.transcript.trim();
@@ -218,10 +235,14 @@ export function createRecordedClip(params: {
     segmentId: params.segmentId,
     dateStr: params.dateStr,
     createdAt: timeStr,
-    durationSec: Math.max(1, Math.round(params.durationSec)),
+    durationSec: Math.max(0, Math.round(params.durationSec)),
     transcript: cleanText,
     starred: false,
     audioSource: params.audioSource,
+    mediaType: params.mediaType || 'audio',
+    mediaUrl: params.mediaUrl,
+    fileName: params.fileName,
+    fileSizeLabel: params.fileSizeLabel,
     confidence: 0.98,
     waveformPeaks: peaks,
   };

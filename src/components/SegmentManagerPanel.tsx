@@ -29,6 +29,7 @@ export const SegmentManagerPanel: React.FC<SegmentManagerPanelProps> = ({
   allClips,
 }) => {
   const [playingClipId, setPlayingClipId] = useState<string | null>(null);
+  const audioElRef = React.useRef<HTMLAudioElement | null>(null);
 
   // Initialize view month based on selectedDate or default 2026-11
   const initialYearMonth = useMemo(() => {
@@ -96,16 +97,44 @@ export const SegmentManagerPanel: React.FC<SegmentManagerPanelProps> = ({
     }
   };
 
+  const stopAllPlayback = () => {
+    window.speechSynthesis?.cancel();
+    if (audioElRef.current) {
+      audioElRef.current.pause();
+      audioElRef.current = null;
+    }
+  };
+
   const handleTogglePlayClip = (clip: VoiceClip) => {
     if (playingClipId === clip.id) {
-      window.speechSynthesis?.cancel();
+      stopAllPlayback();
       setPlayingClipId(null);
       return;
     }
+    stopAllPlayback();
     setPlayingClipId(clip.id);
+
+    // Inline video playback handles its own element via playingClipId
+    if (clip.mediaType === 'video' && clip.mediaUrl) {
+      return;
+    }
+
+    // Real uploaded audio file playback
+    if (clip.mediaType === 'audio' && clip.mediaUrl) {
+      try {
+        const audio = new Audio(clip.mediaUrl);
+        audioElRef.current = audio;
+        audio.onended = () => setPlayingClipId(null);
+        audio.onerror = () => setPlayingClipId(null);
+        audio.play().catch(() => setPlayingClipId(null));
+        return;
+      } catch {
+        // fallback
+      }
+    }
+
     if ('speechSynthesis' in window) {
       try {
-        window.speechSynthesis.cancel();
         const utter = new SpeechSynthesisUtterance(clip.transcript);
         utter.lang = 'zh-CN';
         utter.rate = 1.05;
@@ -125,11 +154,11 @@ export const SegmentManagerPanel: React.FC<SegmentManagerPanelProps> = ({
   return (
     <div className="space-y-5 select-none">
       {/* Quick Select Bar: Quick Pills + Tactile Calendar Toggle */}
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <div
           role="group"
           aria-label="快捷日期筛选"
-          className="apple-recessed-track p-1 rounded-full flex items-center gap-1"
+          className="apple-recessed-track p-1 rounded-full flex items-center gap-0.5"
         >
           {[
             { dateStr: '2026-11-05', label: '今天' },
@@ -142,7 +171,7 @@ export const SegmentManagerPanel: React.FC<SegmentManagerPanelProps> = ({
                 key={item.dateStr}
                 type="button"
                 onClick={() => handleSelectDay(item.dateStr)}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer whitespace-nowrap ${
+                className={`min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer whitespace-nowrap active:scale-95 ${
                   active
                     ? 'apple-pill-active text-[#1D1D1F] font-semibold'
                     : 'text-[#6E6E73] hover:text-[#1D1D1F]'
@@ -158,7 +187,7 @@ export const SegmentManagerPanel: React.FC<SegmentManagerPanelProps> = ({
           type="button"
           onClick={() => setIsCalendarOpen((prev) => !prev)}
           aria-label="展开或收起拟物台历"
-          className={`tactile-subtle-btn px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 cursor-pointer transition-all ${
+          className={`tactile-subtle-btn min-h-[44px] px-3.5 py-2 rounded-full text-xs font-medium flex items-center gap-1.5 cursor-pointer transition-all whitespace-nowrap active:scale-95 ${
             isCalendarOpen
               ? 'apple-pill-active text-[#1D1D1F] font-semibold'
               : 'text-[#6E6E73] hover:text-[#1D1D1F]'
@@ -192,12 +221,12 @@ export const SegmentManagerPanel: React.FC<SegmentManagerPanelProps> = ({
               )}
             </div>
 
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1.5">
               <button
                 type="button"
                 onClick={handlePrevMonth}
                 aria-label="上一月"
-                className="w-7 h-7 rounded-full tactile-subtle-btn flex items-center justify-center text-[#1D1D1F] cursor-pointer"
+                className="w-10 h-10 min-w-[44px] min-h-[44px] rounded-full tactile-subtle-btn flex items-center justify-center text-[#1D1D1F] cursor-pointer active:scale-95"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
@@ -205,7 +234,7 @@ export const SegmentManagerPanel: React.FC<SegmentManagerPanelProps> = ({
                 type="button"
                 onClick={handleNextMonth}
                 aria-label="下一月"
-                className="w-7 h-7 rounded-full tactile-subtle-btn flex items-center justify-center text-[#1D1D1F] cursor-pointer"
+                className="w-10 h-10 min-w-[44px] min-h-[44px] rounded-full tactile-subtle-btn flex items-center justify-center text-[#1D1D1F] cursor-pointer active:scale-95"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
@@ -236,7 +265,7 @@ export const SegmentManagerPanel: React.FC<SegmentManagerPanelProps> = ({
                   aria-label={`${d.dateStr}${
                     hasRecordings ? `，有 ${clipCount} 条录音` : ''
                   }`}
-                  className={`w-9 h-9 sm:w-10 sm:h-10 mx-auto rounded-2xl flex flex-col items-center justify-center relative cursor-pointer transition-all ${
+                  className={`w-10 h-10 mx-auto rounded-2xl flex flex-col items-center justify-center relative cursor-pointer transition-all active:scale-95 ${
                     isSelected
                       ? 'calendar-cell-active scale-105'
                       : d.isCurrentMonth
@@ -301,7 +330,7 @@ export const SegmentManagerPanel: React.FC<SegmentManagerPanelProps> = ({
               该日暂无录音片段
             </p>
             <p className="text-[11px] text-[#86868B]/70 mt-1">
-              轻按主界面红色实体按键随时录制
+              轻按主界面麦克风按键随时录制
             </p>
           </div>
         ) : (
@@ -311,21 +340,43 @@ export const SegmentManagerPanel: React.FC<SegmentManagerPanelProps> = ({
               2,
               '0'
             );
+            const mediaLabel =
+              clip.mediaType === 'video'
+                ? '录像'
+                : clip.mediaType === 'file'
+                ? '文件'
+                : clip.audioSource === 'upload'
+                ? '音频文件'
+                : null;
 
             return (
               <article
                 key={clip.id}
                 className="apple-ceramic-card rounded-[24px] p-5 transition-all"
               >
-                <div className="flex items-center justify-between mb-2.5">
-                  <span className="text-xs font-semibold tracking-tight text-[#1D1D1F]">
-                    片段 {segmentNum}
-                  </span>
+                <div className="flex items-center justify-between mb-2.5 gap-2">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <span className="text-xs font-semibold tracking-tight text-[#1D1D1F] whitespace-nowrap">
+                      片段 {segmentNum}
+                    </span>
+                    {mediaLabel && (
+                      <>
+                        <span aria-hidden="true" className="text-xs text-[#86868B]">
+                          ·
+                        </span>
+                        <span className="text-xs text-[#86868B] whitespace-nowrap">
+                          {mediaLabel}
+                        </span>
+                      </>
+                    )}
+                  </div>
 
-                  <div className="flex items-center gap-3">
-                    <span className="font-mono text-[11px] text-[#86868B] tabular-nums">
-                      {clip.createdAt.slice(0, 5)} ·{' '}
-                      {formatDuration(clip.durationSec)}
+                  <div className="flex items-center gap-3 shrink-0">
+                    <span className="font-mono text-[11px] text-[#86868B] tabular-nums whitespace-nowrap">
+                      {clip.createdAt.slice(0, 5)}
+                      {clip.durationSec > 0
+                        ? ` · ${formatDuration(clip.durationSec)}`
+                        : ''}
                     </span>
 
                     <button
@@ -336,7 +387,7 @@ export const SegmentManagerPanel: React.FC<SegmentManagerPanelProps> = ({
                           ? `暂停片段 ${segmentNum}`
                           : `播放片段 ${segmentNum}`
                       }
-                      className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 cursor-pointer transition-all ${
+                      className={`w-10 h-10 min-w-[44px] min-h-[44px] -mr-1.5 rounded-full flex items-center justify-center shrink-0 cursor-pointer transition-all active:scale-95 ${
                         isPlaying
                           ? 'bg-[#FF3B30] text-white shadow-xs'
                           : 'tactile-subtle-btn text-[#1D1D1F]'
@@ -351,9 +402,27 @@ export const SegmentManagerPanel: React.FC<SegmentManagerPanelProps> = ({
                   </div>
                 </div>
 
+                {clip.fileName && (
+                  <p className="font-mono text-[11px] text-[#6E6E73] mb-1.5 truncate">
+                    {clip.fileName}
+                    {clip.fileSizeLabel ? ` · ${clip.fileSizeLabel}` : ''}
+                  </p>
+                )}
+
                 <p className="text-[15px] leading-relaxed text-[#1D1D1F]">
                   {clip.transcript}
                 </p>
+
+                {isPlaying && clip.mediaType === 'video' && clip.mediaUrl && (
+                  <video
+                    src={clip.mediaUrl}
+                    controls
+                    autoPlay
+                    playsInline
+                    onEnded={() => setPlayingClipId(null)}
+                    className="w-full rounded-2xl mt-3 bg-black max-h-56"
+                  />
+                )}
               </article>
             );
           })

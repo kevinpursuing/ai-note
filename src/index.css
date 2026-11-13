@@ -6,6 +6,14 @@
     --font-mono: 'SF Mono', 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
   }
 
+  html,
+  body {
+    height: 100%;
+    overscroll-behavior: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
   body {
     font-family: var(--font-sans);
     background-color: #F4F3EF;
@@ -14,6 +22,13 @@
     -moz-osx-font-smoothing: grayscale;
     overflow: hidden;
   }
+}
+
+.touch-hold-surface {
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 /* 深泽直人 / 苹果白瓷凹窝与微米点阵声学光环 (Scheme 5) */
@@ -42,6 +57,50 @@
     -4px -4px 12px rgba(255, 255, 255, 0.9),
     inset 4px 4px 10px rgba(190, 186, 178, 0.35),
     inset -4px -4px 10px rgba(255, 255, 255, 0.9);
+}
+
+/* 卫星白瓷小凹槽与按键（用于录像与上传入口） */
+.ceramic-satellite-well {
+  background: #F0EEEA;
+  box-shadow:
+    inset 6px 6px 14px #D7D5CE,
+    inset -6px -6px 14px #FFFFFF,
+    0 1px 0 rgba(255, 255, 255, 0.85);
+}
+
+.ceramic-satellite-button {
+  background: radial-gradient(circle at 35% 30%, #FFFFFF 0%, #F7F6F2 68%, #EAE8E2 100%);
+  box-shadow:
+    5px 7px 14px rgba(176, 172, 162, 0.5),
+    -4px -4px 11px rgba(255, 255, 255, 0.95),
+    inset 0 1px 1.5px rgba(255, 255, 255, 1),
+    inset 0 -1.5px 3px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 160ms cubic-bezier(0.16, 1, 0.3, 1), transform 160ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ceramic-satellite-button:active {
+  transform: scale(0.91);
+  box-shadow:
+    2px 3px 7px rgba(176, 172, 162, 0.4),
+    -2px -2px 6px rgba(255, 255, 255, 0.9),
+    inset 2px 2px 6px rgba(190, 186, 178, 0.35),
+    inset -2px -2px 6px rgba(255, 255, 255, 0.9);
+}
+
+.ceramic-lens-ring {
+  background: radial-gradient(circle at 38% 35%, #343438 0%, #1B1B1E 70%, #0E0E10 100%);
+  box-shadow:
+    inset 0 1px 2px rgba(255, 255, 255, 0.2),
+    0 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+.viewfinder-bezel {
+  background: linear-gradient(180deg, #FAF9F6 0%, #ECEAE3 100%);
+  box-shadow:
+    0 32px 64px -12px rgba(20, 20, 22, 0.22),
+    0 8px 20px -4px rgba(20, 20, 22, 0.08),
+    inset 0 1.5px 2px rgba(255, 255, 255, 1),
+    0 0 0 1px rgba(0, 0, 0, 0.06);
 }
 
 /* Silky Left-to-Right character emergence animation */

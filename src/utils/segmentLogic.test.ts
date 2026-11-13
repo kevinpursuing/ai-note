@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   formatDuration,
+  formatFileSize,
   calculateSegmentStats,
   resolveTargetSegment,
   createRecordedClip,
@@ -150,5 +151,39 @@ test('generateCalendarMatrix generates correct grid for November 2026', () => {
   assert.ok(nov5);
   assert.equal(nov5.isToday, true);
   assert.equal(nov5.isCurrentMonth, true);
+});
+
+test('formatFileSize formats bytes into readable units', () => {
+  assert.equal(formatFileSize(0), '0 KB');
+  assert.equal(formatFileSize(512), '512 B');
+  assert.equal(formatFileSize(2048), '2 KB');
+  assert.equal(formatFileSize(1.5 * 1024 * 1024), '1.5 MB');
+});
+
+test('createRecordedClip supports video and uploaded file metadata', () => {
+  const videoClip = createRecordedClip({
+    segmentId: 'seg-1',
+    dateStr: '2026-11-12',
+    transcript: '板书推导过程录像记录。',
+    durationSec: 15,
+    audioSource: 'camera',
+    mediaType: 'video',
+    fileName: '课堂片段_01.webm',
+  });
+  assert.equal(videoClip.mediaType, 'video');
+  assert.equal(videoClip.fileName, '课堂片段_01.webm');
+
+  const fileClip = createRecordedClip({
+    segmentId: 'seg-1',
+    dateStr: '2026-11-12',
+    transcript: '已上传音频文件，等待后续整理。',
+    durationSec: 42,
+    audioSource: 'upload',
+    mediaType: 'file',
+    fileName: '教研会议纪要.mp3',
+    fileSizeLabel: '2.4 MB',
+  });
+  assert.equal(fileClip.mediaType, 'file');
+  assert.equal(fileClip.fileSizeLabel, '2.4 MB');
 });
 
