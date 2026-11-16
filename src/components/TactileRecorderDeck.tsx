@@ -598,9 +598,9 @@ export const TactileRecorderDeck: React.FC<TactileRecorderDeckProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="pointer-events-none fixed inset-6 z-40 rounded-[36px] border-2 border-dashed border-[#FF3B30]/45 bg-[#FAF9F6]/65 backdrop-blur-xs flex items-center justify-center"
+            className="pointer-events-none fixed inset-6 z-40 rounded-[36px] border-2 border-dashed border-[#3B66F5]/45 bg-white/75 backdrop-blur-xs flex items-center justify-center"
           >
-            <span className="text-sm font-medium tracking-wide text-[#1D1D1F]">
+            <span className="text-sm font-medium tracking-wide text-[#111827]">
               松开即可上传至「{activeSegment.title}」
             </span>
           </motion.div>
@@ -630,10 +630,10 @@ export const TactileRecorderDeck: React.FC<TactileRecorderDeckProps> = ({
                 transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
                 className="space-y-2"
               >
-                <div className="font-mono text-[11px] tracking-widest text-[#86868B] tabular-nums">
+                <div className="font-mono text-[11px] tracking-widest text-[#64748B] tabular-nums">
                   {formatDuration(recordingSeconds)}
                 </div>
-                <p className="text-xl sm:text-[22px] font-medium text-[#1D1D1F] leading-[1.65] tracking-tight break-words">
+                <p className="text-xl sm:text-[22px] font-medium text-[#111827] leading-[1.65] tracking-tight break-words">
                   {characters.map((char, idx) => (
                     <span key={idx} className="subtitle-char-reveal">
                       {char}
@@ -650,7 +650,7 @@ export const TactileRecorderDeck: React.FC<TactileRecorderDeckProps> = ({
                 animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                 exit={{ opacity: 0, y: -8, filter: 'blur(3px)' }}
                 transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
-                className="text-center text-xs font-medium tracking-widest text-[#FF3B30] pt-16"
+                className="text-center text-xs font-medium tracking-widest text-[#3B66F5] pt-16"
               >
                 {savedToast}
               </motion.div>
@@ -716,7 +716,7 @@ export const TactileRecorderDeck: React.FC<TactileRecorderDeckProps> = ({
                 className={`w-6 h-6 sm:w-7 sm:h-7 transition-all duration-200 pointer-events-none ${
                   isRecording
                     ? 'text-[#FF3B30] scale-95'
-                    : 'text-[#1D1D1F]/75'
+                    : 'text-[#1E293B]/80'
                 }`}
               />
             </button>
@@ -739,11 +739,11 @@ export const TactileRecorderDeck: React.FC<TactileRecorderDeckProps> = ({
                 fileInputRef.current?.click();
               }}
               aria-label="上传音视频或文稿文件"
-              className="w-full h-full min-w-[44px] min-h-[44px] rounded-full ceramic-satellite-button cursor-pointer flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1D1D1F]"
+              className="w-full h-full min-w-[44px] min-h-[44px] rounded-full ceramic-satellite-button cursor-pointer flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1E293B]"
             >
               <Upload
                 strokeWidth={1.85}
-                className="w-4 h-4 sm:w-5 sm:h-5 text-[#1D1D1F]/80 pointer-events-none"
+                className="w-4 h-4 sm:w-5 sm:h-5 text-[#1E293B]/80 pointer-events-none"
               />
             </button>
           </div>
@@ -779,17 +779,17 @@ export const TactileRecorderDeck: React.FC<TactileRecorderDeckProps> = ({
               {/* Mobile Sheet Handle */}
               <div
                 aria-hidden="true"
-                className="w-10 h-1 rounded-full bg-black/15 mx-auto sm:hidden"
+                className="w-10 h-1 rounded-full bg-slate-900/15 mx-auto sm:hidden"
               />
 
               {/* Top Bar */}
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-xs font-medium text-[#1D1D1F]">
+                <div className="flex items-center gap-2 text-xs font-medium text-[#111827]">
                   <span>随手录像</span>
-                  <span aria-hidden="true" className="text-[#86868B]">
+                  <span aria-hidden="true" className="text-[#94A3B8]">
                     ·
                   </span>
-                  <span className="font-mono text-[#86868B] tabular-nums">
+                  <span className="font-mono text-[#64748B] tabular-nums">
                     {isVideoRecording
                       ? formatDuration(videoSeconds)
                       : hasRealCamera
@@ -801,7 +801,7 @@ export const TactileRecorderDeck: React.FC<TactileRecorderDeckProps> = ({
                   type="button"
                   onClick={handleCloseVideoViewfinder}
                   aria-label="关闭录像取景器"
-                  className="w-11 h-11 -mr-1.5 rounded-full tactile-subtle-btn flex items-center justify-center text-[#1D1D1F] cursor-pointer active:scale-95"
+                  className="w-11 h-11 -mr-1.5 rounded-full tactile-subtle-btn flex items-center justify-center text-[#111827] cursor-pointer active:scale-95"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -869,7 +869,7 @@ export const TactileRecorderDeck: React.FC<TactileRecorderDeckProps> = ({
                     )}
                   </button>
                 </div>
-                <span className="font-mono text-[11px] tracking-widest text-black/45">
+                <span className="font-mono text-[11px] tracking-widest text-[#94A3B8]">
                   {isVideoRecording ? '轻点保存录像' : '轻点开始录像'}
                 </span>
               </div>

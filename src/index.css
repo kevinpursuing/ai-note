@@ -16,8 +16,8 @@
 
   body {
     font-family: var(--font-sans);
-    background-color: #F4F3EF;
-    color: #1D1D1F;
+    background-color: #FFFFFF;
+    color: #111827;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow: hidden;
@@ -31,76 +31,84 @@
   user-select: none;
 }
 
-/* 深泽直人 / 苹果白瓷凹窝与微米点阵声学光环 (Scheme 5) */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* 精致冷白瓷凹窝与微触感按键 */
 .ceramic-soft-well {
-  background: #F2F0EC;
+  background: #F2F5F9;
   box-shadow:
-    inset 12px 12px 28px #D8D6D0,
-    inset -12px -12px 28px #FFFFFF,
-    0 1px 0 rgba(255, 255, 255, 0.85);
+    inset 10px 10px 24px #DCE2EC,
+    inset -10px -10px 24px #FFFFFF,
+    0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 .ceramic-tactile-button {
-  background: radial-gradient(circle at 34% 28%, #FFFFFF 0%, #F6F5F1 62%, #E8E6E0 100%);
+  background: radial-gradient(circle at 34% 28%, #FFFFFF 0%, #F9FBFE 64%, #ECF0F6 100%);
   box-shadow:
-    10px 14px 28px rgba(180, 176, 166, 0.55),
-    -8px -8px 22px rgba(255, 255, 255, 0.95),
+    8px 12px 26px rgba(148, 163, 184, 0.34),
+    -8px -8px 20px rgba(255, 255, 255, 0.98),
     inset 0 1.5px 2px rgba(255, 255, 255, 1),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.05);
+    inset 0 -2px 4px rgba(15, 23, 42, 0.04);
   transition: box-shadow 180ms cubic-bezier(0.16, 1, 0.3, 1), transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .ceramic-tactile-button-pressed {
   transform: scale(0.92);
   box-shadow:
-    4px 6px 14px rgba(180, 176, 166, 0.45),
-    -4px -4px 12px rgba(255, 255, 255, 0.9),
-    inset 4px 4px 10px rgba(190, 186, 178, 0.35),
-    inset -4px -4px 10px rgba(255, 255, 255, 0.9);
+    4px 6px 14px rgba(148, 163, 184, 0.3),
+    -4px -4px 12px rgba(255, 255, 255, 0.95),
+    inset 4px 4px 10px rgba(148, 163, 184, 0.28),
+    inset -4px -4px 10px rgba(255, 255, 255, 0.95);
 }
 
-/* 卫星白瓷小凹槽与按键（用于录像与上传入口） */
+/* 卫星冷白瓷小凹槽与按键 */
 .ceramic-satellite-well {
-  background: #F0EEEA;
+  background: #F2F5F9;
   box-shadow:
-    inset 6px 6px 14px #D7D5CE,
-    inset -6px -6px 14px #FFFFFF,
-    0 1px 0 rgba(255, 255, 255, 0.85);
+    inset 5px 5px 12px #DCE2EC,
+    inset -5px -5px 12px #FFFFFF,
+    0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 .ceramic-satellite-button {
-  background: radial-gradient(circle at 35% 30%, #FFFFFF 0%, #F7F6F2 68%, #EAE8E2 100%);
+  background: radial-gradient(circle at 35% 30%, #FFFFFF 0%, #F9FBFE 68%, #EDF1F7 100%);
   box-shadow:
-    5px 7px 14px rgba(176, 172, 162, 0.5),
-    -4px -4px 11px rgba(255, 255, 255, 0.95),
+    4px 6px 14px rgba(148, 163, 184, 0.32),
+    -4px -4px 10px rgba(255, 255, 255, 0.98),
     inset 0 1px 1.5px rgba(255, 255, 255, 1),
-    inset 0 -1.5px 3px rgba(0, 0, 0, 0.05);
+    inset 0 -1.5px 3px rgba(15, 23, 42, 0.04);
   transition: box-shadow 160ms cubic-bezier(0.16, 1, 0.3, 1), transform 160ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .ceramic-satellite-button:active {
   transform: scale(0.91);
   box-shadow:
-    2px 3px 7px rgba(176, 172, 162, 0.4),
-    -2px -2px 6px rgba(255, 255, 255, 0.9),
-    inset 2px 2px 6px rgba(190, 186, 178, 0.35),
-    inset -2px -2px 6px rgba(255, 255, 255, 0.9);
+    2px 3px 7px rgba(148, 163, 184, 0.25),
+    -2px -2px 6px rgba(255, 255, 255, 0.95),
+    inset 2px 2px 6px rgba(148, 163, 184, 0.25),
+    inset -2px -2px 6px rgba(255, 255, 255, 0.95);
 }
 
 .ceramic-lens-ring {
-  background: radial-gradient(circle at 38% 35%, #343438 0%, #1B1B1E 70%, #0E0E10 100%);
+  background: radial-gradient(circle at 38% 35%, #334155 0%, #1E293B 70%, #0F172A 100%);
   box-shadow:
     inset 0 1px 2px rgba(255, 255, 255, 0.2),
-    0 1px 2px rgba(0, 0, 0, 0.25);
+    0 1px 2px rgba(15, 23, 42, 0.2);
 }
 
 .viewfinder-bezel {
-  background: linear-gradient(180deg, #FAF9F6 0%, #ECEAE3 100%);
+  background: linear-gradient(180deg, #FFFFFF 0%, #F1F5F9 100%);
   box-shadow:
-    0 32px 64px -12px rgba(20, 20, 22, 0.22),
-    0 8px 20px -4px rgba(20, 20, 22, 0.08),
+    0 32px 64px -12px rgba(15, 23, 42, 0.2),
+    0 8px 20px -4px rgba(15, 23, 42, 0.08),
     inset 0 1.5px 2px rgba(255, 255, 255, 1),
-    0 0 0 1px rgba(0, 0, 0, 0.06);
+    0 0 0 1px rgba(15, 23, 42, 0.06);
 }
 
 /* Silky Left-to-Right character emergence animation */
@@ -128,53 +136,41 @@
   animation: silkyCharLeftToRight 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-/* 拟物触感台历与纸张质感底座 */
+/* 精致洁净卡片与浅灰蓝分段控件 */
 .calendar-desk-plate {
-  background: linear-gradient(180deg, #FAF9F6 0%, #F0EEE8 100%);
-  box-shadow:
-    inset 0 1.5px 2px rgba(255, 255, 255, 1),
-    0 8px 24px -4px rgba(20, 20, 22, 0.06),
-    0 1px 3px rgba(0, 0, 0, 0.04),
-    0 0 0 1px rgba(0, 0, 0, 0.06);
+  background: #FFFFFF;
+  border: 1px solid #E8EDF4;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
 }
 
 .calendar-cell-active {
-  background: linear-gradient(180deg, #FFFFFF 0%, #F6F5F0 100%);
-  box-shadow:
-    0 3px 8px rgba(0, 0, 0, 0.1),
-    0 1px 2px rgba(0, 0, 0, 0.05),
-    inset 0 1px 0 #FFFFFF;
+  background: #EFF4FF;
+  border: 1px solid #D5E3FE;
+  color: #3B66F5;
+  box-shadow: 0 1px 2px rgba(59, 102, 245, 0.08);
 }
 
 .apple-ceramic-card {
-  background: linear-gradient(180deg, #FFFFFF 0%, #FAF9F6 100%);
-  box-shadow:
-    0 24px 48px -12px rgba(20, 20, 22, 0.07),
-    0 4px 12px -2px rgba(20, 20, 22, 0.04),
-    inset 0 1px 0 rgba(255, 255, 255, 1),
-    0 0 0 1px rgba(0, 0, 0, 0.05);
+  background: #FFFFFF;
+  border: 1px solid #EAEEF4;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
 }
 
 .apple-recessed-track {
-  background: #E8E6DF;
-  box-shadow:
-    inset 0 1.5px 3px rgba(0, 0, 0, 0.08),
-    0 1px 0 rgba(255, 255, 255, 0.85);
+  background: #EFF2F7;
 }
 
 .apple-pill-active {
-  background: linear-gradient(180deg, #FFFFFF 0%, #F9F8F5 100%);
-  box-shadow:
-    0 2px 6px rgba(0, 0, 0, 0.08),
-    0 1px 2px rgba(0, 0, 0, 0.04),
-    inset 0 1px 0 rgba(255, 255, 255, 1);
+  background: #FFFFFF;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.07);
 }
 
 .tactile-subtle-btn {
-  background: linear-gradient(180deg, #FFFFFF 0%, #F3F2EE 100%);
-  box-shadow:
-    0 2px 5px rgba(0, 0, 0, 0.05),
-    0 0 0 1px rgba(0, 0, 0, 0.07),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
-  transition: transform 120ms cubic-bezier(0.16, 1, 0.3, 1);
+  background: #FFFFFF;
+  border: 1px solid #E8EDF4;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  transition: transform 120ms cubic-bezier(0.16, 1, 0.3, 1), background-color 120ms ease;
+}
+.tactile-subtle-btn:hover {
+  background: #F7F9FC;
 }

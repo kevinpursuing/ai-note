@@ -11,8 +11,18 @@ import {
   appendAIEntryToSegmentNotes,
   formatFriendlyDate,
   generateCalendarMatrix,
+  matchStudentFromText,
+  groupClipsByStudent,
+  synthesizeGrowthDraft,
+  runAutomationTaskGeneration,
+  parseVoiceScheduleCommand,
+  formatScheduleLabel,
+  isDateWithinLookback,
   type DailySegment,
   type VoiceClip,
+  type StudentProfile,
+  type GrowthTemplate,
+  type AutomationTask,
 } from './segmentLogic';
 
 const sampleSegments: DailySegment[] = [
@@ -186,4 +196,172 @@ test('createRecordedClip supports video and uploaded file metadata', () => {
   assert.equal(fileClip.mediaType, 'file');
   assert.equal(fileClip.fileSizeLabel, '2.4 MB');
 });
+
+const sampleStudents: StudentProfile[] = [
+  { id: 'stu-lin', name: '林子涵', classLabel: '三年二班' },
+  { id: 'stu-chen', name: '陈思琪', classLabel: '三年一班' },
+];
+
+const sampleTemplates: GrowthTemplate[] = [
+  {
+    id: 'tpl-weekly-obs',
+    title: '课堂观察周报',
+    summaryHint: '课堂观察',
+    keywords: ['课堂观察', '周报'],
+  },
+  {
+    id: 'tpl-home-school',
+    title: '家校沟通纪要',
+    summaryHint: '家校沟通',
+    keywords: ['家校', '家长'],
+  },
+  {
+    id: 'tpl-coaching',
+    title: '个性化指导手记',
+    summaryHint: '个性辅导',
+    keywords: ['指导', '辅导', '手记'],
+  },
+];
+
+test('matchStudentFromText and groupClipsByStudent attribute clips per student', () => {
+  const matched = matchStudentFromText('今天林子涵在小组里主动总结实验数据', sampleStudents);
+  assert.equal(matched?.id, 'stu-lin');
+
+  const c1 = createRecordedClip({
+    segmentId: 'seg-1',
+    dateStr: '2026-11-05',
+    transcript: '林子涵课堂笔记非常仔细。',
+    durationSec: 12,
+    audioSource: 'simulated',
+    timestampStr: '09:30:00',
+  });
+  const c2 = createRecordedClip({
+    segmentId: 'seg-1',
+    dateStr: '2026-11-05',
+    transcript: '今天下午全班开展阅读分享活动。',
+    durationSec: 18,
+    audioSource: 'simulated',
+    timestampStr: '14:10:00',
+  });
+
+  const groups = groupClipsByStudent([c1, c2], sampleStudents);
+  const linGroup = groups.find((g) => g.student.id === 'stu-lin');
+  const unassigned = groups.find((g) => g.student.id === 'unassigned');
+
+  assert.equal(linGroup?.clips.length, 1);
+  assert.equal(linGroup?.totalDurationSec, 12);
+  assert.equal(unassigned?.clips.length, 1);
+});
+
+test('isDateWithinLookback and runAutomationTaskGeneration respect class coverage and lookbackDays with execution logs', () => {
+  assert.equal(isDateWithinLookback('2026-11-05', '2026-11-05', 3), true);
+  assert.equal(isDateWithinLookback('2026-11-03', '2026-11-05', 3), true);
+  assert.equal(isDateWithinLookback('2026-11-01', '2026-11-05', 3), false);
+
+  const cRecentLin = createRecordedClip({
+    segmentId: 'seg-1',
+    dateStr: '2026-11-05',
+    transcript: '林子涵今天主动解答了两道探究题。',
+    durationSec: 15,
+    audioSource: 'simulated',
+    studentId: 'stu-lin',
+    studentName: '林子涵',
+  });
+  const cOldLin = createRecordedClip({
+    segmentId: 'seg-2',
+    dateStr: '2026-10-20',
+    transcript: '林子涵十月份的旧记录。',
+    durationSec: 10,
+    audioSource: 'simulated',
+    studentId: 'stu-lin',
+    studentName: '林子涵',
+  });
+  const cChenClass1 = createRecordedClip({
+    segmentId: 'seg-1',
+    dateStr: '2026-11-05',
+    transcript: '陈思琪今天朗读很流利。',
+    durationSec: 12,
+    audioSource: 'simulated',
+    studentId: 'stu-chen',
+    studentName: '陈思琪',
+  });
+
+  const draft = synthesizeGrowthDraft({
+    student: sampleStudents[0],
+    template: sampleTemplates[0],
+    clips: [cRecentLin, cOldLin],
+    dateStr: '2026-11-05',
+    lookbackDays: 7,
+    nowTimeStr: '17:30',
+  });
+
+  assert.equal(draft.templateTitle, '课堂观察周报');
+  assert.ok(draft.content.includes('林子涵'));
+  assert.deepEqual(draft.sourceClipIds, [cRecentLin.id]);
+
+  const task: AutomationTask = {
+    id: 'task-1',
+    title: '三年二班近7天生成',
+    frequency: 'daily',
+    weekdays: [],
+    timeStr: '17:30',
+    templateIds: ['tpl-weekly-obs', 'tpl-home-school'],
+    targetClasses: ['三年二班'],
+    lookbackDays: 7,
+    enabled: true,
+    executionLogs: [],
+  };
+
+  const result = runAutomationTaskGeneration({
+    task,
+    students: sampleStudents,
+    templates: sampleTemplates,
+    clips: [cRecentLin, cOldLin, cChenClass1],
+    existingDrafts: [],
+    dateStr: '2026-11-05',
+    nowTimeStr: '17:30',
+  });
+
+  // Only stu-lin (三年二班) should be generated, not stu-chen (三年一班)
+  assert.equal(result.generatedCount, 2);
+  assert.equal(result.drafts.length, 2);
+  assert.equal(result.executionLog.items.length, 2);
+  assert.equal(result.executionLog.items[0].studentName, '林子涵');
+  assert.equal(result.executionLog.items[0].generatedAt, '11-05 17:30');
+});
+
+test('parseVoiceScheduleCommand parses class coverage, lookbackDays, schedules, and templates', () => {
+  const daily = parseVoiceScheduleCommand(
+    '每天下午五点半给三年二班结合前7天资料把课堂观察周报和家校沟通生成草稿',
+    sampleTemplates,
+    ['三年二班', '三年一班']
+  );
+  assert.equal(daily.frequency, 'daily');
+  assert.equal(daily.timeStr, '17:30');
+  assert.deepEqual(daily.targetClasses, ['三年二班']);
+  assert.equal(daily.lookbackDays, 7);
+  assert.deepEqual(daily.templateIds, ['tpl-weekly-obs', 'tpl-home-school']);
+  assert.equal(
+    formatScheduleLabel({
+      frequency: daily.frequency,
+      weekdays: daily.weekdays,
+      timeStr: daily.timeStr,
+    }),
+    '每天 17:30'
+  );
+
+  const weekly = parseVoiceScheduleCommand(
+    '每周一、周五晚上8点15分针对全部班级结合近14天生成个性化指导手记',
+    sampleTemplates,
+    ['三年二班', '三年一班']
+  );
+  assert.equal(weekly.frequency, 'weekly');
+  assert.deepEqual(weekly.weekdays, [1, 5]);
+  assert.equal(weekly.timeStr, '20:15');
+  assert.deepEqual(weekly.targetClasses, []);
+  assert.equal(weekly.lookbackDays, 14);
+  assert.deepEqual(weekly.templateIds, ['tpl-coaching']);
+});
+
+
 
